@@ -9,7 +9,6 @@ and this project adheres to
 ## [4.0.1] - 2025-12-04
 ### Minor Changes
 #### com.unity.ml-agents (C#)
-- Upgraded to Inference Engine 2.4.1 (#)
 - Fixed tensor indexing to use correct CHW layout (#6239)
 - Updated the installation doc (#6242)
 
