@@ -617,6 +617,7 @@ class SimpleActor(nn.Module, Actor):
             conditional_sigma=conditional_sigma,
             tanh_squash=tanh_squash,
             deterministic=network_settings.deterministic,
+            output_init_scale=network_settings.policy_output_scale,
         )
 
     @property

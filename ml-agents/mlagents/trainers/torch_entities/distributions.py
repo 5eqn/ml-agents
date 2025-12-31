@@ -156,6 +156,7 @@ class GaussianDistribution(nn.Module):
         num_outputs: int,
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
+        kernel_gain: float = 0.2,
     ):
         super().__init__()
         self.conditional_sigma = conditional_sigma
@@ -163,7 +164,7 @@ class GaussianDistribution(nn.Module):
             hidden_size,
             num_outputs,
             kernel_init=Initialization.KaimingHeNormal,
-            kernel_gain=0.2,
+            kernel_gain=kernel_gain,
             bias_init=Initialization.Zero,
         )
         self.tanh_squash = tanh_squash
@@ -172,7 +173,7 @@ class GaussianDistribution(nn.Module):
                 hidden_size,
                 num_outputs,
                 kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=0.2,
+                kernel_gain=kernel_gain,
                 bias_init=Initialization.Zero,
             )
         else:
@@ -198,9 +199,10 @@ class GaussianDistribution(nn.Module):
 
 
 class MultiCategoricalDistribution(nn.Module):
-    def __init__(self, hidden_size: int, act_sizes: List[int]):
+    def __init__(self, hidden_size: int, act_sizes: List[int], kernel_gain: float = 0.1):
         super().__init__()
         self.act_sizes = act_sizes
+        self.kernel_gain = kernel_gain
         self.branches = self._create_policy_branches(hidden_size)
 
     def _create_policy_branches(self, hidden_size: int) -> nn.ModuleList:
@@ -210,7 +212,7 @@ class MultiCategoricalDistribution(nn.Module):
                 hidden_size,
                 size,
                 kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=0.1,
+                kernel_gain=self.kernel_gain,
                 bias_init=Initialization.Zero,
             )
             branches.append(branch_output_layer)

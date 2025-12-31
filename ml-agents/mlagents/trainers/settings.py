@@ -136,6 +136,9 @@ class NetworkSettings:
     hidden_units: int = 128
     num_layers: int = 2
     vis_encode_type: EncoderType = EncoderType.SIMPLE
+    # Optional scale applied to the final policy output layers' weight init.
+    # If None, code falls back to the existing hardcoded defaults in distributions.
+    policy_output_scale: Optional[float] = None
     memory: Optional[MemorySettings] = None
     goal_conditioning_type: ConditioningType = ConditioningType.HYPER
     deterministic: bool = parser.get_default("deterministic")
