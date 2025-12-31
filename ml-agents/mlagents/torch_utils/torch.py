@@ -51,11 +51,14 @@ def set_torch_config(torch_settings: TorchSettings) -> None:
 
     _device = torch.device(device_str)
 
-    if _device.type == "cuda":
-        torch.set_default_tensor_type(torch.cuda.FloatTensor)
-    else:
-        torch.set_default_tensor_type(torch.FloatTensor)
-    logger.debug(f"default Torch device: {_device}")
+    # fix support for mps
+    torch.set_default_device(_device.type)
+
+    # if _device.type == "cuda":
+    #     torch.set_default_tensor_type(torch.cuda.FloatTensor)
+    # else:
+    #     torch.set_default_tensor_type(torch.FloatTensor)
+    logger.info(f"default Torch device: {_device}")
 
 
 # Initialize to default settings
