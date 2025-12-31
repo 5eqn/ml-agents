@@ -57,6 +57,7 @@ setup(
     zip_safe=False,
     install_requires=[
         # Test-only dependencies should go in test_requirements.txt, not here.
+        "transformers>=4.46.3",
         "six>=1.17.0",
         "onnx>=1.17.0",
         "grpcio>=1.11.0",
