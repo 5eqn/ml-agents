@@ -57,6 +57,8 @@ setup(
     zip_safe=False,
     install_requires=[
         # Test-only dependencies should go in test_requirements.txt, not here.
+        "six>=1.17.0",
+        "onnx>=1.17.0",
         "grpcio>=1.11.0",
         "h5py>=2.9.0",
         f"mlagents_envs=={VERSION}",
