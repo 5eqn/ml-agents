@@ -4,8 +4,10 @@ from mlagents.torch_utils import torch, nn
 import numpy as np
 import math
 from mlagents.trainers.torch_entities.layers import linear_layer, Initialization
+from mlagents_envs.logging_util import get_logger
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
+logger = get_logger(__name__)
 
 
 class DistInstance(nn.Module, abc.ABC):
@@ -59,6 +61,8 @@ class DiscreteDistInstance(DistInstance):
 class GaussianDistInstance(DistInstance):
     def __init__(self, mean, std):
         super().__init__()
+        # logger.info(f"gaussian_init:")
+        # logger.info(f"std = {std[:3]}")
         self.mean = mean
         self.std = std
 
@@ -157,6 +161,7 @@ class GaussianDistribution(nn.Module):
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
         kernel_gain: float = 0.2,
+        init_weight_scale: float = 1,  # Applies to both average and std
     ):
         super().__init__()
         self.conditional_sigma = conditional_sigma
@@ -164,7 +169,7 @@ class GaussianDistribution(nn.Module):
             hidden_size,
             num_outputs,
             kernel_init=Initialization.KaimingHeNormal,
-            kernel_gain=kernel_gain,
+            kernel_gain=kernel_gain * init_weight_scale,
             bias_init=Initialization.Zero,
         )
         self.tanh_squash = tanh_squash
@@ -178,7 +183,7 @@ class GaussianDistribution(nn.Module):
             )
         else:
             self.log_sigma = nn.Parameter(
-                torch.zeros(1, num_outputs, requires_grad=True)
+                torch.full((1, num_outputs), np.log(init_weight_scale), requires_grad=True)
             )
 
     def forward(self, inputs: torch.Tensor) -> List[DistInstance]:

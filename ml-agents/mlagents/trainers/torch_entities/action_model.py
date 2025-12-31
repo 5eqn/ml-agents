@@ -9,9 +9,11 @@ from mlagents.trainers.torch_entities.distributions import (
 from mlagents.trainers.torch_entities.agent_action import AgentAction
 from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs
 from mlagents_envs.base_env import ActionSpec
+from mlagents_envs.logging_util import get_logger
 
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
+logger = get_logger(__name__)
 
 
 class DistInstances(NamedTuple):
@@ -34,7 +36,7 @@ class ActionModel(nn.Module):
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
         deterministic: bool = False,
-        output_init_scale: Optional[float] = None,
+        output_init_scale: float = 1,
     ):
         """
         A torch module that represents the action space of a policy. The ActionModel may contain
@@ -55,19 +57,18 @@ class ActionModel(nn.Module):
         self._discrete_distribution = None
 
         if self.action_spec.continuous_size > 0:
-            cont_gain = output_init_scale if output_init_scale is not None else 0.2
             self._continuous_distribution = GaussianDistribution(
                 self.encoding_size,
                 self.action_spec.continuous_size,
                 conditional_sigma=conditional_sigma,
                 tanh_squash=tanh_squash,
-                kernel_gain=cont_gain,
+                kernel_gain=0.2,
+                init_weight_scale=output_init_scale
             )
 
         if self.action_spec.discrete_size > 0:
-            disc_gain = output_init_scale if output_init_scale is not None else 0.1
             self._discrete_distribution = MultiCategoricalDistribution(
-                self.encoding_size, self.action_spec.discrete_branches, kernel_gain=disc_gain
+                self.encoding_size, self.action_spec.discrete_branches, kernel_gain=0.1
             )
 
         # During training, clipping is done in TorchPolicy, but we need to clip before ONNX
